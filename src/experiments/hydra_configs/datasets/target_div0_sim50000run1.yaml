@@ -1,0 +1,10 @@
+_target_: transfer_learning.preprocessing.gluon_dataset
+dataset_name: target_div0_sim50000run1
+frequency: W-SUN
+level: id_ts
+save_model: true
+split_date_test: '2023-09-17'
+subsample_size: 5000
+target_var: Target
+timestamp_var: Date
+trunc_date: '2024-01-14'

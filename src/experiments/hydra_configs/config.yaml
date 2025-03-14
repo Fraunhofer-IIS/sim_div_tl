@@ -1,0 +1,39 @@
+defaults:
+- _self_
+- datasets: target_div0_simallrun1
+- models: NBEATSEnsemble
+hydra:
+  job:
+    chdir: true
+  run:
+    dir: /home/dev/projects/data/run1/outputs/forecasts/${datasets.dataset_name}
+params:
+  M5_path: /home/dev/projects/data/M5/
+  cluster_features:
+  - abs_energy
+  - intermittency
+  - mean
+  - median
+  - kurtosis
+  - skewness
+  - standard_deviation
+  - agg_autocorrelation_max
+  - erraticness
+  - agg_linear_trend_slope
+  context_length: 30
+  data_prep_env: /home/dev/projects/publication/src/experiments/data-prep/.venv
+  forecast_horizon: 15
+  interim_path: /home/dev/projects/data/run1/interim/
+  mode: prediction
+  model_path: /home/dev/projects/data/run1/interim/source_div0run1/models/nbeats/ensemble/weekly/horizon_15/
+  n_plots: 10
+  num_samples: 1
+  path_to_concat: /home/dev/projects/data/concat/
+  path_to_config: /home/dev/projects/publication/src/experiments/hydra_configs/config.yaml
+  path_to_configs_datasets: /home/dev/projects/publication/src/experiments/hydra_configs/datasets/
+  path_to_data: /home/dev/projects/data/run1/
+  path_to_nbeats_config: /home/dev/projects/publication/src/experiments/hydra_configs/models/NBEATSEnsemble.yaml
+  path_to_outputs_forecasts: /home/dev/projects/data/run1/outputs/forecasts/
+  path_to_outputs_train: /home/dev/projects/data/run1/outputs/train/
+  run: run1
+  run_dir: /home/dev/projects/publication/src/experiments

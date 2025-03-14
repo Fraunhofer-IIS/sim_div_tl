@@ -1,0 +1,20 @@
+model_params:
+  _target_: transfer_learning.models.NBEATSEnsemble.NBEATSEnsemble
+  epochs: 0
+  expansion_coefficient_lengths: 32
+  freq: weekly
+  max_num_decays: 10
+  meta_bagging_size: 2
+  meta_context_length:
+  - 30
+  meta_loss_function:
+  - sMAPE
+  - MASE
+  - MAPE
+  num_batches_per_epoch: 50
+  num_block_layers: 4
+  num_blocks: 1
+  num_stacks: 30
+  sharing: true
+  stack_types: G
+  widths: 512
