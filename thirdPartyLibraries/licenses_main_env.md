@@ -39,6 +39,7 @@
 |  pandas                    |  2.2.0        |  BSD LICENSE                                         |
 |  patsy                     |  1.0.1        |  BSD LICENSE                                         |
 |  pillow                    |  11.1.0       |  CMU LICENSE (MIT-CMU)                               |
+|  plotly	                 |  6.2.0	     |  MIT LICENSE                                         |
 |  pydantic                  |  2.10.4       |  MIT LICENSE                                         |
 |  pyparsing                 |  3.2.1        |  MIT LICENSE                                         |
 |  python-dateutil           |  2.9.0.post0  |  BSD LICENSE;; APACHE SOFTWARE LICENSE               |
@@ -46,6 +47,7 @@
 |  requests                  |  2.32.3       |  APACHE SOFTWARE LICENSE                             |
 |  scikit-learn              |  1.6.1        |  BSD LICENSE                                         |
 |  scipy                     |  1.15.2       |  BSD LICENSE                                         |
+|  seaborn	                 |  0.13.2	     |  MIT LICENSE                                         |
 |  setuptools                |  65.5.1       |  MIT LICENSE                                         |
 |  statsmodels               |  0.14.4       |  BSD LICENSE                                         |
 |  stumpy                    |  1.13.0       |  BSD LICENSE                                         |
