@@ -406,6 +406,7 @@ files = [
     {file = "ortools-9.12.4544-cp312-cp312-win_amd64.whl", hash = "sha256:4faee45703acf4d12efbb2d8b6b3da09bfadecf1404ccbe4ea5fad687ed350b2"},
     {file = "ortools-9.12.4544-cp313-cp313-macosx_10_15_x86_64.whl", hash = "sha256:4f53c87604fa3bd106ab3001dc6527049f472904d005bb8564268de18258424f"},
     {file = "ortools-9.12.4544-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:79d5f417968369465e2c37c1f9f596715cd7ffc803d7ff232743b7eeadbb6c9c"},
+    {file = "ortools-9.12.4544-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:cb2b5ba34373be3a02b393cc0c28cde0f24045d4ccd3b73376e4fd3193523e7b"},
     {file = "ortools-9.12.4544-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ef58e80d19b5215849c008e9b64edf158cb00b893c8a4adf2c7a1510bb3776d8"},
     {file = "ortools-9.12.4544-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:1a24981e45514d3d72ce2b8f17eb3187a988a5b2347610214a8f96b222a6a42a"},
     {file = "ortools-9.12.4544-cp313-cp313-win_amd64.whl", hash = "sha256:72988c82a77f6ab9767e9e77ea6fc99dc9ab492f33f10639ad48cfb551e70618"},
@@ -788,4 +789,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "df924c7c2597708a52a976879de1bbf60f02e4f29a207b93de65e598a0ec543e"
+content-hash = "9779d185edcd39e3f0df6b7390647d3e44fb190d9aff1fde47b06b9723bacbbc"

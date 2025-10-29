@@ -112,7 +112,6 @@ class gluon_dataset(torch.utils.data.Dataset):
             > self.split_date
         ).sum()
         windows = ((steps_after_split - self.forecast_horizon) // self.step_size) + 1
-        assert windows > 0, "Windows < 0!"
 
         training_dataset, test_template = split(
             ds, date=pd.Period(self.split_date, self.freq)

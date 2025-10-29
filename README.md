@@ -32,7 +32,7 @@ For each step of the framework, we use the following scripts:
 (3) "src/experiments/data_creation/create_diverse_sources.py"
 (4) "src/experiments/data_creation/create_sources_and_targets.py"
 (5) "src/experiments/transfer_learning/run_tl.py"
-(6) "src/experiments/evaluation/1_evaluate_single_runs.ipynb", "src/experiments/evaluation/2_evaluate_over_runs.ipynb"
+(6) "src/experiments/evaluation/1_evaluate_accuracy.ipynb", "src/experiments/evaluation/2_accuracy_features_regression.ipynb"
 
 ## References
 [1] Alexandrov, A., Benidis, K., Bohlke-Schneider, M., Flunkert, V., Gasthaus, J., Januschowski, T., ... & Wang, Y. (2020). Gluonts: Probabilistic and neural time series modeling in python. Journal of Machine Learning Research, 21(116), 1-6.

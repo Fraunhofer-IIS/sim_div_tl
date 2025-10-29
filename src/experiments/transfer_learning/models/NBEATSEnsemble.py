@@ -101,9 +101,7 @@ class NBEATSEnsemble(BaseModel):
             num_digits = len(str(len(predictors)))
             for index, predictor in enumerate(predictors):
                 composite_path = path / f"predictor_{str(index).zfill(num_digits)}"
-                os.makedirs(
-                    str(composite_path), exist_ok=True
-                )  # exist_ok=True  from ehrigca
+                os.makedirs(str(composite_path), exist_ok=True)  # exist_ok=True
                 predictor.serialize(composite_path)
 
             # serialize all remaining constructor parameters
