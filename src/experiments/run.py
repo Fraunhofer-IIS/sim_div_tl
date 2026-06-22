@@ -37,10 +37,10 @@ def main(cfg):
     os.makedirs(cfg.params.interim_path, exist_ok=True)
     os.makedirs(cfg.params.path_to_outputs_forecasts, exist_ok=True)
     os.makedirs(cfg.params.path_to_outputs_train, exist_ok=True)
-    # create_concat(cfg)
-    # create_diverse_sources(cfg)
+    create_concat(cfg)
+    create_diverse_sources(cfg)
     run_in_data_prep_env(cfg)
-    # run_tl(cfg)
+    run_tl(cfg)
 
 
 if __name__ == "__main__":
