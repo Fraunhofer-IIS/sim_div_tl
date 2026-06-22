@@ -1,0 +1,7 @@
+model_params:
+  _target_: transfer_learning.models.Transformer.Transformer
+  context_length: 30
+  epochs: 800
+  freq: weekly
+  max_num_decays: 10
+  num_batches_per_epoch: 50

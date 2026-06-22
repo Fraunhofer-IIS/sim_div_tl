@@ -1,12 +1,12 @@
-# Study on forecasting weekly time series with an N-BEATS foundation model
-Implementation of pre-training, forecasting and evaluating an N-BEATS foundation model and assessing the relationship to data set similarity, diversity and time series features.
+# Feature-based Predictors for Time Series Foundation Model Performance via Similarity-driven Dataset Generation
+Implementation of pre-training, forecasting and evaluating an N-BEATS foundation model proxy and assessing the relationship to data set similarity, diversity and time series features.
 
 ## Framework
 (1) First, we create the data basis of time series by concatenating weekly publicly available data sets.
-(2) Then, we calculate ten time series features for each series.
+(2) Then, we calculate ten time series features for each series (can be extended to 35).
 (3) We create increasingly diverse (in regard to the features) so called original source data sets. 
 (4) From each of them, we create a source and multiple target data sets, which are increasingly similar (in regard to the features) to the source.
-(5) We pre-train an N-BEATS ensemble on each source and do zero-shot forecasts on the respective target data sets. The source performance is also calculated.
+(5) We pre-train an N-BEATS ensemble (or vanilla Transformer) on each source and do zero-shot forecasts on the respective target data sets. The source performance is also calculated.
 (6) In the evaluation, we investigate the relationships between source and target performances, similarity and diversity and the features.
 
 
@@ -24,6 +24,7 @@ In the paper, we report the results over several runs.
 After filling out the config file, run "src/experiments/run.py". 
 The results will be saved in the respective folder in "/data".
 For evaluation of single and multiple runs, use the jupyter notebooks in the "evaluation" folder. 
+For further analysis of the clusters and datasets, please refer to src/experiments/data_creation/plots_and_analysis.
 
 ## Scripts
 For each step of the framework, we use the following scripts:
@@ -31,8 +32,9 @@ For each step of the framework, we use the following scripts:
 (2) "src/experiments/data_creation/selected_tsfresh_features.py"
 (3) "src/experiments/data_creation/create_diverse_sources.py"
 (4) "src/experiments/data_creation/create_sources_and_targets.py"
-(5) "src/experiments/transfer_learning/run_tl.py"
-(6) "src/experiments/evaluation/1_evaluate_accuracy.ipynb", "src/experiments/evaluation/2_accuracy_features_regression.ipynb"
+(5) "src/experiments/data_creation/plots_and_analysis/features/source_target_features.ipynb"
+(6) "src/experiments/transfer_learning/run_tl.py"
+(7) "src/experiments/evaluation/0_get_metrics.ipynb", "src/experiments/evaluation/1_evaluate_accuracy.ipynb", "src/experiments/evaluation/2_accuracy_features_regression.ipynb"
 
 ## References
 [1] Alexandrov, A., Benidis, K., Bohlke-Schneider, M., Flunkert, V., Gasthaus, J., Januschowski, T., ... & Wang, Y. (2020). Gluonts: Probabilistic and neural time series modeling in python. Journal of Machine Learning Research, 21(116), 1-6.

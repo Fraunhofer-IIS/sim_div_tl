@@ -26,7 +26,7 @@ def create_concat(cfg):
     """
 
     # check if concat has already been built in previous runs and load it in that case
-    if os.path.exists(cfg["params"]["path_to_concat"] + "CONCAT.parquet"):
+    if os.path.exists(cfg["params"]["path_to_concat"]):
         return
 
     # Get all weekly datasets from the Monash Time Series Repository through GluonTS
@@ -135,22 +135,42 @@ def create_concat(cfg):
     concat = concat.reset_index(drop=True)
     concat.set_index("Date", inplace=True)
 
+    concat = pd.read_parquet(cfg["params"]["path_to_concat"])
+    
+    
+
     ts_dict = PandasDataset.from_long_dataframe(
         concat, target="Target", item_id="id_ts"
     )
     extracted_features = wrapper_calculate_ts_metrics(
         ts_dict, trim_zeros=False, id_string="item_id"
     )
+    
     extracted_features.dropna(axis=0, inplace=True)
     extracted_features["data"] = extracted_features["id_ts"].str.split("_").str[-1]
+    
+    if cfg["params"]["concat_balanced"]:
+        # resample to have less series from Kaggle Wiki Web Traffic
+        # find the smallest dataset
+        sample_size = extracted_features.groupby("data")["id_ts"].nunique().min()
+
+        selected_ids = []
+        for d in extracted_features["data"].unique():
+            ids = extracted_features.loc[extracted_features["data"] == d, "id_ts"].unique()
+            sampled_ids = np.random.choice(ids, size=sample_size, replace=False)
+            selected_ids.extend(sampled_ids)
+
+        extracted_features = extracted_features[
+            extracted_features["id_ts"].isin(selected_ids)
+        ]
 
     extracted_features.to_parquet(
-        cfg["params"]["path_to_concat"] + "/CONCAT_feat.parquet"
+        cfg["params"]["path_to_concat_feat"]
     )
 
     # drop the ids not in the features
     concat = concat[concat["id_ts"].isin(list(extracted_features.id_ts))]
     concat = concat.reset_index()
 
-    concat.to_parquet(cfg["params"]["path_to_concat"] + "/CONCAT.parquet")
+    concat.to_parquet(cfg["params"]["path_to_concat"])
     print("Done.")

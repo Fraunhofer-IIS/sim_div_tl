@@ -1,4 +1,4 @@
-from data_creation.create_concat import create_concat
+from experiments.data_creation.create_concat import create_concat
 from data_creation.create_diverse_sources import create_diverse_sources
 
 from transfer_learning.run_tl import run_tl
@@ -10,7 +10,7 @@ import os
 def run_in_data_prep_env(cfg):
     # Run create_sources_and_targets in the data-prep environment
 
-    python_executable = os.path.join(cfg.params.data_prep_env, "bin", "python3.10")
+    python_executable = os.path.join(cfg.params.data_prep_env, "bin", "python")
 
     subprocess.run(
         [
