@@ -17,23 +17,10 @@ def create_diverse_sources(cfg):
     """
 
     print("Creating diverse original source data.")
-    path_to_concat = cfg["params"]["path_to_concat"]
+    path_to_concat_feat = cfg["params"]["path_to_concat_feat"]
     path_to_data = cfg["params"]["path_to_data"]
-    features = pd.read_parquet(path_to_concat + "CONCAT_feat.parquet")[
-        [
-            "id_ts",
-            "abs_energy",
-            "intermittency",
-            "mean",
-            "median",
-            "kurtosis",
-            "skewness",
-            "standard_deviation",
-            "agg_autocorrelation_max",
-            "erraticness",
-            "agg_linear_trend_slope",
-        ]
-    ]
+    features = pd.read_parquet(path_to_concat_feat)[
+        ["id_ts"]+cfg["params"]["cluster_features"]]
 
     def choose_ids_randomly(df, size):
 

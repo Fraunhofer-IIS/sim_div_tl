@@ -1,6 +1,3 @@
-target_size = 5000
-
-
 def create_sources_and_targets(cfg):
     """
     For each original source data set, build a source and multiple target data sets, which are increasingly similar to the source, regarding the features.
@@ -23,7 +20,9 @@ def create_sources_and_targets(cfg):
     from k_means_constrained import KMeansConstrained
 
     run = cfg["params"]["run"]
-    concat = pd.read_parquet(cfg["params"]["path_to_concat"] + "CONCAT.parquet")
+    concat = pd.read_parquet(cfg["params"]["path_to_concat"])
+    target_size = cfg["params"]["target_size"]
+    pot_target_sizes = cfg["params"]["pot_target_sizes"]
 
     for percentile in [10, 5, 0]:
         org_source_feat = pd.read_parquet(
@@ -35,58 +34,67 @@ def create_sources_and_targets(cfg):
         )[["id_ts"] + cfg["params"]["cluster_features"]]
         org_source_ids = list(org_source_feat.id_ts.unique())
 
-        def reserve_target_ids(df, pot_target_size):
-            
+        def reserve_target_ids(df, pot_target_size, div):
+
             if pot_target_size == "all":
                 reserve_for_target = (
-                        np.random.choice(
-                            a=df.id_ts.unique(),
-                            size=target_size,
-                            replace=False,
-                        )
-                    ).tolist()
+                    np.random.choice(
+                        a=df.id_ts.unique(),
+                        size=target_size,
+                        replace=False,
+                    )
+                ).tolist()
 
             else:
 
                 if pot_target_size > 0.5 * df.id_ts.nunique():
-                        clf = KMeansConstrained(n_clusters=2, size_max=pot_target_size)
+                    clf = KMeansConstrained(n_clusters=2, size_max=pot_target_size)
                 else:
-                        clf = KMeansConstrained(n_clusters=2, size_min=pot_target_size)
+                    clf = KMeansConstrained(n_clusters=2, size_min=pot_target_size)
 
                 clf.fit_predict(df.loc[:, df.columns != "id_ts"])
                 print(clf.cluster_centers_)
                 print(clf.labels_)
                 print(
-                        "Cluster centers for potential target size:"
-                        + str(pot_target_size)
+                    "Cluster centers for potential target size:" + str(pot_target_size)
                 )
                 print(pd.DataFrame(clf.cluster_centers_, columns=df.columns[1:]))
                 centers = pd.DataFrame(clf.cluster_centers_, columns=df.columns[1:])
                 centers.to_parquet(
                     cfg["params"]["path_to_data"]
-                    + f"cluster_centers/centers_{pot_target_size}.parquet"
+                    + f"cluster_centers/centers_{pot_target_size}_{div}.parquet"
                 )
 
-                pot_target_ids = list(df[clf.labels_ == 0]["id_ts"])
+                zero_ids = list(df[clf.labels_ == 0]["id_ts"])
+                one_ids = list(df[clf.labels_ == 1]["id_ts"])
+
+                if (abs(len(zero_ids) - pot_target_size)) < abs(
+                    (len(one_ids) - pot_target_size)
+                ):
+                    pot_target_ids = zero_ids
+                    cluster = 0
+                else:
+                    pot_target_ids = one_ids
+                    cluster = 1
+                print(f"number pot target ids {len(pot_target_ids)}")
+                print(f"pot target ids taken from cluster {cluster}")
 
                 reserve_for_target = (
-                        np.random.choice(
-                            a=pot_target_ids,
-                            size=target_size,
-                            replace=False,
-                        )
-                    ).tolist()
+                    np.random.choice(
+                        a=pot_target_ids,
+                        size=target_size,
+                        replace=False,
+                    )
+                ).tolist()
 
             return reserve_for_target
 
         reserve_for_target = {}
         reserve_for_target_lst = []
 
-        pot_target_sizes = [5000, 12000, 25000, 50000, 100000, "all"]
-
         for pot_target_size in pot_target_sizes:
             pot_target_ids = reserve_target_ids(
-                df=org_source_feat, pot_target_size=pot_target_size
+                df=org_source_feat, pot_target_size=pot_target_size, div=percentile
             )
             reserve_for_target[f"similarity_{pot_target_size}"] = pot_target_ids
 
@@ -98,9 +106,7 @@ def create_sources_and_targets(cfg):
         )
         source_feat = org_source_feat[org_source_feat.id_ts.isin(source_ids)]
         source = concat[concat.id_ts.isin(source_ids)]
-        similarity_df = pd.DataFrame(
-            columns=["pot target size", "similarity", "intermittency", "erraticness"]
-        )
+        similarity_df = pd.DataFrame(columns=["pot target size", "similarity"])
         similarity_df["pot target size"] = [str(size) for size in pot_target_sizes] + [
             "source"
         ]
@@ -108,12 +114,12 @@ def create_sources_and_targets(cfg):
         similarity_df.loc[
             similarity_df["pot target size"] == "source", "similarity"
         ] = None
-        similarity_df.loc[
-            similarity_df["pot target size"] == "source", "intermittency"
-        ] = source_feat["intermittency"].mean()
-        similarity_df.loc[
-            similarity_df["pot target size"] == "source", "erraticness"
-        ] = source_feat["erraticness"].mean()
+        # similarity_df.loc[
+        #     similarity_df["pot target size"] == "source", "intermittency"
+        # ] = source_feat["intermittency"].mean()
+        # similarity_df.loc[
+        #     similarity_df["pot target size"] == "source", "erraticness"
+        # ] = source_feat["erraticness"].mean()
 
         for pot_target_size in pot_target_sizes:
             similarity = []
@@ -146,13 +152,13 @@ def create_sources_and_targets(cfg):
             similarity_df.loc[
                 similarity_df["pot target size"] == str(pot_target_size), "similarity"
             ] = sum(similarity)
-            similarity_df.loc[
-                similarity_df["pot target size"] == str(pot_target_size),
-                "intermittency",
-            ] = target_feat["intermittency"].mean()
-            similarity_df.loc[
-                similarity_df["pot target size"] == str(pot_target_size), "erraticness"
-            ] = target_feat["erraticness"].mean()
+            # similarity_df.loc[
+            #     similarity_df["pot target size"] == str(pot_target_size),
+            #     "intermittency",
+            # ] = target_feat["intermittency"].mean()
+            # similarity_df.loc[
+            #     similarity_df["pot target size"] == str(pot_target_size), "erraticness"
+            # ] = target_feat["erraticness"].mean()
 
             source.to_parquet(
                 cfg["params"]["path_to_data"]

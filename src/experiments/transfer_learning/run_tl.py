@@ -6,7 +6,7 @@ from hydra.core.global_hydra import GlobalHydra
 
 def run_tl(cfg):
     """
-    Train an N-BEATS ensemble on the source for all original source data sets.
+    Train an N-BEATS ensemble / Transformer on the source for all original source data sets.
     Zero-shot forecast on all target data sets.
 
     Args:
@@ -16,10 +16,21 @@ def run_tl(cfg):
     run = cfg["params"]["run"]
     path_to_config = cfg["params"]["path_to_config"]
     path_to_nbeats_config = cfg["params"]["path_to_nbeats_config"]
+    path_to_transformer_config = cfg["params"]["path_to_transformer_config"]
     path_to_configs_datasets = cfg["params"]["path_to_configs_datasets"]
     path_to_data_interim = cfg["params"]["interim_path"]
     path_to_outputs_train = cfg["params"]["path_to_outputs_train"]
     path_to_outputs_forecasts = cfg["params"]["path_to_outputs_forecasts"]
+    if "NBEATSEnsemble" in cfg["models"]["model_params"]["_target_"]:
+        model = "nbeats"
+        model_config = path_to_nbeats_config
+    elif "Transformer" in cfg["models"]["model_params"]["_target_"]:
+        model = "transformer"
+        model_config = path_to_transformer_config
+    else:
+        print(
+            "No valid model name, please select a valid model name from 'NBEATSEnsemble' and 'Transformer'."
+        )
 
     print(f"Starting transfer learning run, date: {datetime.now()}")
     for percentile in [10, 5, 0]:
@@ -34,7 +45,9 @@ def run_tl(cfg):
                 item["datasets"] = "source_div" + str(percentile) + run
                 break
         config["hydra"]["run"]["dir"] = (
-            path_to_outputs_train + "pretrain_nbeats/pretrain_${datasets.dataset_name}"
+            path_to_outputs_train
+            + f"pretrain_{model}"
+            + "/pretrain_${datasets.dataset_name}"
         )
         config["params"]["mode"] = "train"
         config["params"]["model_path"] = (
@@ -42,7 +55,7 @@ def run_tl(cfg):
             + "source_div"
             + str(percentile)
             + run
-            + "/models/nbeats/ensemble/weekly/horizon_15/"
+            + f"/models/{model}/ensemble/weekly/horizon_15/"
         )
 
         # Write the updated config back to the file
@@ -50,11 +63,11 @@ def run_tl(cfg):
             yaml.dump(config, file)
 
             # modify NBEATSEnsemble.yaml
-        with open(path_to_nbeats_config, "r") as file:
+        with open(model_config, "r") as file:
             config = yaml.safe_load(file)
 
         config["model_params"]["epochs"] = 800
-        with open(path_to_nbeats_config, "w") as file:
+        with open(model_config, "w") as file:
             yaml.dump(config, file)
 
         # modify dataset.yaml
@@ -98,7 +111,7 @@ def run_tl(cfg):
             + "source_div"
             + str(percentile)
             + run
-            + "/models/nbeats/ensemble/weekly/horizon_15/"
+            + f"/models/{model}/ensemble/weekly/horizon_15/"
         )
 
         # Write the updated config back to the file
@@ -106,11 +119,11 @@ def run_tl(cfg):
             yaml.dump(config, file)
 
         # modify NBEATSEnsemble.yaml
-        with open(path_to_nbeats_config, "r") as file:
+        with open(model_config, "r") as file:
             config = yaml.safe_load(file)
 
         config["model_params"]["epochs"] = 0
-        with open(path_to_nbeats_config, "w") as file:
+        with open(model_config, "w") as file:
             yaml.dump(config, file)
 
         # modify dataset.yaml
@@ -136,7 +149,7 @@ def run_tl(cfg):
         GlobalHydra.instance().clear()
         main()
 
-        for pot_target_size in [5000, 12000, 25000, 50000, 100000, "all"]:
+        for pot_target_size in cfg["params"]["pot_target_sizes"]:
             # tl for targets sim0 to sim100
             with open(path_to_config, "r") as file:
                 config = yaml.safe_load(file)
@@ -161,7 +174,7 @@ def run_tl(cfg):
                 + "source_div"
                 + str(percentile)
                 + run
-                + "/models/nbeats/ensemble/weekly/horizon_15/"
+                + f"/models/{model}/ensemble/weekly/horizon_15/"
             )
 
             # Write the updated config back to the file
@@ -169,11 +182,11 @@ def run_tl(cfg):
                 yaml.dump(config, file)
 
             # modify NBEATSEnsemble.yaml
-            with open(path_to_nbeats_config, "r") as file:
+            with open(model_config, "r") as file:
                 config = yaml.safe_load(file)
 
             config["model_params"]["epochs"] = 0
-            with open(path_to_nbeats_config, "w") as file:
+            with open(model_config, "w") as file:
                 yaml.dump(config, file)
 
             print(
