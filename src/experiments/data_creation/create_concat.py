@@ -27,6 +27,7 @@ def create_concat(cfg):
 
     # check if concat has already been built in previous runs and load it in that case
     if os.path.exists(cfg["params"]["path_to_concat"]):
+        concat = pd.read_parquet(cfg["params"]["path_to_concat"])
         return
 
     # Get all weekly datasets from the Monash Time Series Repository through GluonTS
@@ -133,10 +134,7 @@ def create_concat(cfg):
     concat = concat.groupby("id_ts", group_keys=False).apply(remove_trailing_zeros)
     concat = concat.groupby("id_ts").apply(align_to_end_date)
     concat = concat.reset_index(drop=True)
-    concat.set_index("Date", inplace=True)
-
-    concat = pd.read_parquet(cfg["params"]["path_to_concat"])
-    
+    concat.set_index("Date", inplace=True)  
     
 
     ts_dict = PandasDataset.from_long_dataframe(
