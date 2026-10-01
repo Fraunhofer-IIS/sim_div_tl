@@ -114,12 +114,6 @@ def create_sources_and_targets(cfg):
         similarity_df.loc[
             similarity_df["pot target size"] == "source", "similarity"
         ] = None
-        # similarity_df.loc[
-        #     similarity_df["pot target size"] == "source", "intermittency"
-        # ] = source_feat["intermittency"].mean()
-        # similarity_df.loc[
-        #     similarity_df["pot target size"] == "source", "erraticness"
-        # ] = source_feat["erraticness"].mean()
 
         for pot_target_size in pot_target_sizes:
             similarity = []
@@ -152,13 +146,6 @@ def create_sources_and_targets(cfg):
             similarity_df.loc[
                 similarity_df["pot target size"] == str(pot_target_size), "similarity"
             ] = sum(similarity)
-            # similarity_df.loc[
-            #     similarity_df["pot target size"] == str(pot_target_size),
-            #     "intermittency",
-            # ] = target_feat["intermittency"].mean()
-            # similarity_df.loc[
-            #     similarity_df["pot target size"] == str(pot_target_size), "erraticness"
-            # ] = target_feat["erraticness"].mean()
 
             source.to_parquet(
                 cfg["params"]["path_to_data"]

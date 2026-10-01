@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "main_env"
-version = "0.3.0"
+version = "1.0.0"
 description = "Main environment for the experiments"
-authors = ["Claudia Ehrig <claudia.ehrig@iis.fraunhofer.de>"]
+authors = ["Claudia Lehner <claudia.lehner@iis.fraunhofer.de>"]
 license = "Fraunhofer IIS"
 readme = "README.md"
 packages = [{include = "experiments", from = "src"}]

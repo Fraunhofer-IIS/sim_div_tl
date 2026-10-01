@@ -3,9 +3,8 @@ import numpy as np
 from tqdm import tqdm
 from tsfresh.feature_extraction import feature_calculators
 from statsmodels.tsa.seasonal import STL
-
-# from hurst import compute_Hc
-# from pycatch22 import catch22_all
+from hurst import compute_Hc
+from pycatch22 import catch22_all
 
 # please install hurst and pycatch22 yourself if you want to use these features
 
@@ -73,54 +72,52 @@ def calculate_fourier_entropy(ts, bins=10):
         return np.nan
 
 
-# def hurst_exponent(x):
-#     """
-#     Compute the Hurst exponent of a time series.
+def hurst_exponent(x):
+    """
+    Compute the Hurst exponent of a time series.
 
-#     Parameters
-#     ----------
-#     x : array-like
-#         Time series data (univariate).
+    Parameters
+    ----------
+    x : array-like
+        Time series data (univariate).
 
-#     Returns
-#     -------
-#     float
-#         Hurst exponent H.
-#     """
-#     x = np.asarray(x, dtype=float)
-#     try:
-#         H, c, data = compute_Hc(x, kind="random_walk", simplified=True)
-#         return H
-#     except Exception:
-#         return np.nan
+    Returns
+    -------
+    float
+        Hurst exponent H.
+    """
+    x = np.asarray(x, dtype=float)
+    try:
+        H, c, data = compute_Hc(x, kind="random_walk", simplified=True)
+        return H
+    except Exception:
+        return np.nan
 
 
-# def catch22_features(x):
-#     """
-#     Compute all 22 catch22 features for a univariate time series.
+def catch22_features(x):
+    """
+    Compute all 22 catch22 features for a univariate time series.
 
-#     Parameters
-#     ----------
-#     x : array-like
-#         Time series data (1D).
+    Parameters
+    ----------
+    x : array-like
+        Time series data (1D).
 
-#     Returns
-#     -------
-#     dict
-#         Dictionary mapping feature names to their values.
-#     """
-#     x = np.asarray(x, dtype=float)
-#     res = catch22_all(x)
-#     # res["names"] : list of feature names
-#     # res["values"]: array of corresponding feature values
-#     return dict(zip(res["names"], res["values"]))
+    Returns
+    -------
+    dict
+        Dictionary mapping feature names to their values.
+    """
+    x = np.asarray(x, dtype=float)
+    res = catch22_all(x)
+    return dict(zip(res["names"], res["values"]))
 
 
 def calculate_ts_metric(ts, id_ts, trim_zeros):
 
     index_non_zero = ts.nonzero()[0]
     number_of_non_zero = len(index_non_zero)
-    # CATCH22_NAMES = catch22_all(np.zeros(100))["names"]
+    CATCH22_NAMES = catch22_all(np.zeros(100))["names"]
 
     # if there are less than 4 observations unequal zero, don't bother, skip to the next
     if number_of_non_zero < 4:
@@ -137,8 +134,9 @@ def calculate_ts_metric(ts, id_ts, trim_zeros):
             "skewness": None,
             "standard_deviation": None,
             "agg_linear_trend_slope": None,
-            "entropy": None,
-            "seasonal_strength": None,
+            # uncomment for extended features:
+            # "entropy": None,
+            # "seasonal_strength": None,
             # "hurst_exponent": None,
             # **{name: None for name in CATCH22_NAMES},
         }
@@ -170,9 +168,10 @@ def calculate_ts_metric(ts, id_ts, trim_zeros):
         skewness = feature_calculators.skewness(ts)
         standard_deviation = feature_calculators.standard_deviation(ts)
 
-        entropy = calculate_fourier_entropy(ts, bins=10)
+        # uncomment for extended features:
+        # entropy = calculate_fourier_entropy(ts, bins=10)
 
-        seasonal_strength_value = seasonal_strength(ts, period=52)
+        # seasonal_strength_value = seasonal_strength(ts, period=52)
 
         # hurst_exponent_value = hurst_exponent(ts)
 
@@ -190,8 +189,9 @@ def calculate_ts_metric(ts, id_ts, trim_zeros):
             "median": median,
             "skewness": skewness,
             "standard_deviation": standard_deviation,
-            "entropy": entropy,
-            "seasonal_strength": seasonal_strength_value,
+            # uncomment for extended features:
+            # "entropy": entropy,
+            # "seasonal_strength": seasonal_strength_value,
             # "hurst_exponent": hurst_exponent_value,
             # **catch22_dict,
         }
