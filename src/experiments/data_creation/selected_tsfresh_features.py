@@ -198,11 +198,13 @@ def calculate_ts_metric(ts, id_ts, trim_zeros):
     return return_dict
 
 
-def wrapper_calculate_ts_metrics(ts_dict, trim_zeros, id_string):
+def wrapper_calculate_ts_metrics(ts_dict, trim_zeros, id_string, on_train):
     metrics_list = []
 
     for i in tqdm(ts_dict):
         iter_ts = i["target"]
+        if on_train:
+            iter_ts = iter_ts[:-15]
         metrics_list.append(
             calculate_ts_metric(ts=iter_ts, id_ts=i[id_string], trim_zeros=trim_zeros)
         )

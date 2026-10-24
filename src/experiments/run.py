@@ -1,7 +1,10 @@
 from experiments.data_creation.create_concat import create_concat
-from data_creation.create_diverse_sources import create_diverse_sources
+from experiments.data_creation.plots_and_analysis.features.calculate_concat_feats_train import (
+    calculate_concat_train_feats,
+)
+from experiments.data_creation.create_diverse_sources import create_diverse_sources
 
-from transfer_learning.run_tl import run_tl
+from experiments.transfer_learning.run_tl import run_tl
 import hydra
 import subprocess
 import os
@@ -41,6 +44,7 @@ def main(cfg):
     create_diverse_sources(cfg)
     run_in_data_prep_env(cfg)
     run_tl(cfg)
+    calculate_concat_train_feats(cfg)
 
 
 if __name__ == "__main__":
