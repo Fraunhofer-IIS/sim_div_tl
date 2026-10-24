@@ -1,23 +1,16 @@
 import pandas as pd
-import statsmodels.api as sm
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
-from scipy import stats
-import sys, os
 from sklearn.model_selection import (
-    RepeatedKFold,
     GridSearchCV,
     LeaveOneGroupOut,
     GroupKFold,
 )
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
 from sklearn.inspection import permutation_importance
 from sklearn.metrics import r2_score
 
-import statsmodels.api as sm
 
 from scipy.stats import linregress
 
@@ -33,13 +26,16 @@ param_grid = {
 
 
 all_metrics_df = pd.read_parquet(
-    f"{path_to_evaluation}/results_metrics_features.parquet"
+    f"{path_to_evaluation}results_metrics_features_train_mean.parquet"
 )
 
 all_metrics_df["group"] = all_metrics_df["div"] + "_" + all_metrics_df["run"]
 
 
-# features = ["autocorr", "mean", "trend", "skewness"]  # for feature importance analysis, use less correlated features
+# features = [
+#     "trend",
+#     # "erraticness",
+# ]  # for feature importance analysis, use less correlated features
 features = [
     "abs_energy",
     "intermittency",
@@ -339,7 +335,7 @@ final_df.to_csv(
 # PREDICTION PLOTS
 # --------------------------------------------------
 
-targets = ["MASE", "RMSSE", "sMAPE"]
+targets = ["RMSSE", "MASE", "sMAPE"]
 
 fig, axes = plt.subplots(
     1,

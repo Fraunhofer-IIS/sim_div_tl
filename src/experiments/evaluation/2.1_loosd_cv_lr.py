@@ -4,11 +4,8 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import RepeatedKFold
 from sklearn.inspection import permutation_importance
 from sklearn.metrics import r2_score
-import matplotlib.pyplot as plt
-from scipy.stats import linregress
 from sklearn.model_selection import LeaveOneGroupOut
 
 # adjust paths in /data_creation/plots_and_analysis/config.py
@@ -17,17 +14,17 @@ path_to_data = "/home/dev/projects/data"
 
 
 all_metrics_df = pd.read_parquet(
-    f"{path_to_evaluation}/results_metrics_features.parquet"
+    f"{path_to_evaluation}results_metrics_features_train_mean.parquet"
 )
 all_metrics_df["group"] = all_metrics_df["div"] + "_" + all_metrics_df["run"]
 
-# features = ["intermittency"]  # test single feature linear regression
-features = [
-    "autocorr",
-    "mean",
-    "trend",
-    "skewness",
-]  # use less correlated features for linear regression
+features = ["kurtosis"]  # test single feature linear regression
+# features = [
+#     "mean",
+#     "intermittency",
+#     "trend",
+#     "kurtosis",
+# ]  # use less correlated features for linear regression
 
 
 logo = LeaveOneGroupOut()
@@ -167,9 +164,9 @@ for target in targets:
 
     coef_mean = fold_coefficients.mean(axis=0)
 
-    coef_ci_lower = np.percentile(fold_coefficients, 2.5, axis=0)
+    coef_min = np.min(fold_coefficients, axis=0)
 
-    coef_ci_upper = np.percentile(fold_coefficients, 97.5, axis=0)
+    coef_max = np.max(fold_coefficients, axis=0)
 
     # ------------------------------------------------
     # p-values / significance
@@ -179,7 +176,10 @@ for target in targets:
 
     median_pvalue = np.median(fold_pvalues, axis=0)
 
-    significance_rate = (fold_pvalues < 0.05).mean(axis=0)
+    # significance_rate = (fold_pvalues < 0.05).mean(axis=0)
+    sign_rate = np.maximum(
+        (fold_coefficients < 0).mean(axis=0), (fold_coefficients > 0).mean(axis=0)
+    )
 
     # ------------------------------------------------
     # Store results
@@ -188,13 +188,11 @@ for target in targets:
     results_dict[target] = {
         "cv_r2": cv_r2,
         "importance_mean": mean_importance,
-        "importance_ci_lower": ci_lower,
-        "importance_ci_upper": ci_upper,
         "coef_mean": coef_mean,
-        "coef_ci_lower": coef_ci_lower,
-        "coef_ci_upper": coef_ci_upper,
+        "coef_min": coef_min,
+        "coef_max": coef_max,
         "median_pvalue": median_pvalue,
-        "significance_rate": significance_rate,
+        "sign_rate": sign_rate,
     }
 
 # --------------------------------------------------
@@ -210,24 +208,7 @@ for i, feature in enumerate(features):
     for target in targets:
 
         row[f"{target}_Coef"] = round(results_dict[target]["coef_mean"][i], 4)
-
-        row[f"{target}_Coef_CI_Lower"] = round(
-            results_dict[target]["coef_ci_lower"][i], 4
-        )
-
-        row[f"{target}_Coef_CI_Upper"] = round(
-            results_dict[target]["coef_ci_upper"][i], 4
-        )
-
-        row[f"{target}_Importance"] = round(
-            results_dict[target]["importance_mean"][i], 4
-        )
-
-        row[f"{target}_MedianP"] = round(results_dict[target]["median_pvalue"][i], 6)
-
-        row[f"{target}_SignifRate"] = round(
-            results_dict[target]["significance_rate"][i], 3
-        )
+        row[f"{target}_SignRate"] = round(results_dict[target]["sign_rate"][i], 3)
 
     rows.append(row)
 
